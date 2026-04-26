@@ -1,70 +1,120 @@
 # Ethical Audit of the Home Credit Default Risk Algorithm
 
-## Overview
-This project audits the Home Credit Default Risk Algorithm (ADS), which assesses credit default risk for borrowers. The goal is to evaluate the fairness, accuracy, and inclusivity of the ADS, with a focus on improving financial inclusion for unbanked populations while maintaining ethical lending practices.
+> A fairness and accuracy audit of an algorithmic decision system (ADS) used for credit default risk assessment, with a focus on financial inclusion for unbanked populations.
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Language](https://img.shields.io/badge/language-Jupyter-orange.svg)
+![Status](https://img.shields.io/badge/status-complete-green.svg)
 
 ## Authors
+
 - **MinJoo Kim**
 - **Azrael Ning**
 
-## Project Goals
-The audit aims to:
-1. Improve the accuracy of credit risk assessments.
-2. Minimize default risks.
-3. Optimize lending decisions while balancing ethical concerns.
+## Table of Contents
 
-### Trade-offs in Model Design
-- **Accuracy vs. Interpretability**: Complex models may be more accurate but harder to interpret.
-- **Risk Minimization vs. Inclusivity**: Striving for inclusivity may increase risk, potentially affecting financial stability.
-- **Cost vs. Benefit**: Sophisticated models can incur higher costs but may lead to better long-term returns.
-- **Privacy vs. Data Utility**: Balancing data privacy with the need for detailed data for accurate predictions.
-- **Short-Term vs. Long-Term Objectives**: Prioritizing immediate gains can have negative long-term consequences.
+- [Overview](#overview)
+- [Project Structure](#project-structure)
+- [Methodology](#methodology)
+- [Results](#results)
+- [Fairness Analysis](#fairness-analysis)
+- [Findings & Recommendations](#findings--recommendations)
+- [References](#references)
+- [License](#license)
 
-## Data Input and Features
-The dataset includes demographic information, financial data, and credit history, with features categorized as:
-- **Integer** (e.g., IDs, target variable)
-- **Floating-point** (e.g., income, credit amounts)
-- **Object** (e.g., contract type, gender)
+## Overview
 
-Missing values were a notable challenge, particularly in features related to assets and external data sources. 
+This project audits the **Home Credit Default Risk** algorithm — an ADS that assesses credit default risk for borrowers. The audit evaluates:
 
-### Key Features and Correlations
-- **TARGET** has weak correlations with other features, making prediction more challenging.
-- **AMT_CREDIT** shows positive correlation with goods prices and annuities.
-- **DAYS_EMPLOYED** and **DAYS_BIRTH** exhibit weak negative correlations with TARGET.
+- **Accuracy** of credit risk predictions
+- **Fairness** across demographic subpopulations
+- **Inclusivity** for unbanked populations
+- **Trade-offs** in model design
 
-## Data Preprocessing
-1. **Handling Missing Values**: Missing values were either dropped or filled using zero, mean, or mode imputation.
-2. **Feature Engineering**: New features like `NEW_EXT_SOURCE` and `PAYMENT_RATE` were created to improve prediction accuracy.
-3. **Handling Outliers**: Outliers were identified and addressed to prevent biased model performance.
+### Design Trade-offs Considered
 
-## Model Implementation and Training
-The LightGBM algorithm was used for training the model. Categorical variables were encoded, and model parameters were optimized through cross-validation.
+| Trade-off | Tension |
+|---|---|
+| Accuracy vs. Interpretability | Complex models predict better but explain worse |
+| Risk Minimization vs. Inclusivity | Stricter filters exclude marginal borrowers |
+| Cost vs. Benefit | Sophisticated models cost more upfront |
+| Privacy vs. Data Utility | Detailed data improves predictions but risks privacy |
+| Short-Term vs. Long-Term | Quick gains can hurt long-term outcomes |
 
-### Validation
-- **Accuracy**: Achieved 91.90% validation accuracy.
-- **ROC-AUC**: 0.735, indicating strong predictive performance.
-- **Precision**: 0.413
-- **Recall**: 0.015
-- **F1-Score**: 0.029, balancing precision and recall.
+## Project Structure
+
+```
+.
+├── Home_Credit_Default_Risk_Predictor.ipynb   # Main analysis notebook
+├── Ethical Audit ... _Report.pdf              # Full written report
+├── LICENSE
+└── README.md
+```
+
+## Methodology
+
+### Data Input
+
+The dataset combines demographic information, financial data, and credit history. Features fall into three types:
+
+| Type | Examples |
+|---|---|
+| Integer | IDs, target variable |
+| Float | Income, credit amounts |
+| Object | Contract type, gender |
+
+### Preprocessing
+
+1. **Missing values** — dropped or imputed (zero, mean, mode)
+2. **Feature engineering** — added `NEW_EXT_SOURCE`, `PAYMENT_RATE`
+3. **Outlier handling** — identified and addressed
+
+### Model
+
+**LightGBM** with cross-validated hyperparameters and encoded categorical features.
+
+## Results
+
+| Metric | Score |
+|---|---|
+| Accuracy | **91.90%** |
+| ROC-AUC | 0.735 |
+| Precision | 0.413 |
+| Recall | 0.015 |
+| F1-Score | 0.029 |
+
+### Key Feature Correlations
+
+- `TARGET` shows weak correlations with most features → harder to predict
+- `AMT_CREDIT` correlates positively with goods prices and annuities
+- `DAYS_EMPLOYED`, `DAYS_BIRTH` weakly negative with `TARGET`
 
 ## Fairness Analysis
-Performance was tested across different subpopulations:
-- Higher precision was observed in low-income individuals, suggesting fewer misclassifications in this group.
-- **F1-scores** revealed trade-offs in performance between different age groups, with lower values for younger adults.
 
-## Sensitivity Analysis
-A sensitivity analysis was conducted by systematically varying input features. Results showed the model's predictions were highly sensitive to small changes in input values, with a range of 0.386 in model predictions.
+Performance was tested across subpopulations defined by **income** (low / middle / high) and **age** (young adults / middle-aged / elderly):
 
-## Conclusion
-The audit highlighted the trade-offs between accuracy, fairness, and inclusivity in credit risk models. The model performed well in terms of accuracy, but further work is needed to ensure fairness across subpopulations.
+- **Best accuracy** — elderly and low-income subgroups
+- **Precision** — highest in low-income groups (fewer misclassifications)
+- **F1-score** — reveals trade-offs across age brackets; younger adults underperform middle-aged
 
-### Recommendations
-- **Enhance Data Quality**: Increase diversity and representation in the dataset.
-- **Address Bias**: Implement fairness measures to reduce bias in predictions.
-- **Improve Interpretability**: Incorporate methods for understanding model decisions.
-- **Ongoing Monitoring**: Ensure transparency, accountability, and continuous monitoring of the ADS after deployment.
+### Sensitivity
+
+Predictions are highly sensitive to small input changes (range of 0.386 across perturbations).
+
+## Findings & Recommendations
+
+The audit surfaces clear trade-offs between accuracy, fairness, and inclusivity. Key recommendations:
+
+- **Data quality** — increase diversity and representation in the dataset
+- **Bias mitigation** — implement fairness measures to reduce prediction bias
+- **Interpretability** — add methods to explain model decisions
+- **Monitoring** — ensure transparency and continuous monitoring post-deployment
 
 ## References
-Montoya, Anna, Kirill Odintsov, and Martin Kotek. “Home Credit Default Risk.”  
-https://kaggle.com/competitions/home-credit-default-risk, 2018.
+
+> Montoya, A., Odintsov, K., & Kotek, M. (2018). *Home Credit Default Risk.*
+> https://kaggle.com/competitions/home-credit-default-risk
+
+## License
+
+MIT — see [LICENSE](LICENSE) for details.
